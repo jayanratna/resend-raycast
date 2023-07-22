@@ -1,12 +1,16 @@
-import { Detail } from "@raycast/api";
-import { CreateDomainResponse } from "resend/build/src/domains/interfaces";
+import { Detail } from '@raycast/api'
+import { CreateDomainResponse } from 'resend/build/src/domains/interfaces'
+import { getDomainStatus, getRegion } from '../utils/domain'
 
 interface DomainDetailProps {
-    initialDomain: CreateDomainResponse
+  initialDomain: CreateDomainResponse
 }
 
 export default function DomainDetail({ initialDomain }: DomainDetailProps) {
-    const markdown = `
+  const domainRegion = getRegion(initialDomain.region)
+  const domainStatus = getDomainStatus(initialDomain.status)
+
+  const markdown = `
 ## DNS Records
 
 \`\`\`
@@ -27,21 +31,21 @@ Status:   Pending
 \`\`\`
     `
 
-    return (
-        <Detail
-            markdown={markdown}
-            navigationTitle={initialDomain.name}
-            metadata={
-                <Detail.Metadata>
-                    <Detail.Metadata.Label title="Region" text={initialDomain.region} />
+  return (
+    <Detail
+      markdown={markdown}
+      navigationTitle={initialDomain.name}
+      metadata={
+        <Detail.Metadata>
+          <Detail.Metadata.Label title="Region" text={domainRegion} />
 
-                    <Detail.Metadata.TagList title="Status">
-                        <Detail.Metadata.TagList.Item text={initialDomain.status} />
-                    </Detail.Metadata.TagList>
+          <Detail.Metadata.TagList title="Status">
+            <Detail.Metadata.TagList.Item text={domainStatus.text} color={domainStatus.color} />
+          </Detail.Metadata.TagList>
 
-                    <Detail.Metadata.Label title="Created" text={initialDomain.created_at} />
-                </Detail.Metadata>
-            }
-        />
-    )
+          <Detail.Metadata.Label title="Created" text={initialDomain.created_at} />
+        </Detail.Metadata>
+      }
+    />
+  )
 }

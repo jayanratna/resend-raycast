@@ -1,24 +1,25 @@
 import useSWR from 'swr'
-import { getResendClient } from '../helpers/withResendClient'
+import { getResendClient } from '../utils/withResendClient'
 
-import { CreateDomainResponse } from "resend/build/src/domains/interfaces"
+import { CreateDomainResponse } from 'resend/build/src/domains/interfaces'
 
 export type Domain = CreateDomainResponse
 
-const listDomains = async () => {
-    try {
-        const servers = await getResendClient().domains.list()
-        return servers
-    } catch (error) {
-        console.error(error)
-    }
+async function listDomains() {
+  try {
+    const domains = await getResendClient().domains.list()
+    return domains
+  } catch (error) {
+    console.error(error)
+  }
 }
 
-export const useDomains = () => {
-    const { data, isLoading } = useSWR('domains', listDomains)
+export function useDomains() {
+  const { data, isLoading, mutate } = useSWR('domains', listDomains)
 
-    return {
-        domains: data as Domain[] | undefined,
-        loading: isLoading
-    }
+  return {
+    domains: data as Domain[] | undefined,
+    mutate,
+    loading: isLoading,
+  }
 }
